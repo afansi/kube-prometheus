@@ -16,6 +16,9 @@ spec:
     - podSelector:
         matchLabels:
           app.kubernetes.io/name: prometheus
+    - namespaceSelector:
+        matchLabels:
+          app.kubernetes.io/name: ingress-nginx
     ports:
     - port: 3000
       protocol: TCP

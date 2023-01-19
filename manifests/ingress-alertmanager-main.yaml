@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/auth-realm: Authentication Required
+    nginx.ingress.kubernetes.io/auth-secret: basic-auth
+    nginx.ingress.kubernetes.io/auth-type: basic
+  name: alertmanager-main
+  namespace: monitoring
+spec:
+  rules:
+  - host: www.alertmanager.reach.talkylabs.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: alertmanager-main
+            port:
+              name: web
+        path: /
+        pathType: Prefix

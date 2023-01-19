@@ -94,6 +94,16 @@
     {
       "source": {
         "git": {
+          "remote": "https://github.com/prometheus-operator/kube-prometheus.git",
+          "subdir": "jsonnet/kube-prometheus"
+        }
+      },
+      "version": "67c08545193ebdd75f57e0afa922f87d56c98781",
+      "sum": "poVaBj4JGrWQf3CIcODuXa5zTPdQcQ0KpiLkqSzG+DU="
+    },
+    {
+      "source": {
+        "git": {
           "remote": "https://github.com/prometheus-operator/prometheus-operator.git",
           "subdir": "jsonnet/mixin"
         }

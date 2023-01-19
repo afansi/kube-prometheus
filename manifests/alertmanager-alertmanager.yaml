@@ -10,6 +10,7 @@ metadata:
   name: main
   namespace: monitoring
 spec:
+  externalUrl: http://www.alertmanager.reach.talkylabs.com
   image: quay.io/prometheus/alertmanager:v0.25.0
   nodeSelector:
     kubernetes.io/os: linux
