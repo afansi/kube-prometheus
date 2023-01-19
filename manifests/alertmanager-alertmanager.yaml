@@ -10,6 +10,20 @@ metadata:
   name: main
   namespace: monitoring
 spec:
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/component: alert-router
+              app.kubernetes.io/instance: main
+              app.kubernetes.io/name: alertmanager
+              app.kubernetes.io/part-of: kube-prometheus
+          namespaces:
+          - monitoring
+          topologyKey: kubernetes.io/hostname
+        weight: 100
   externalUrl: http://www.alertmanager.reach.talkylabs.com
   image: quay.io/prometheus/alertmanager:v0.25.0
   nodeSelector:
