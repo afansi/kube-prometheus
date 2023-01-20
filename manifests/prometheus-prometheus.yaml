@@ -46,7 +46,7 @@ spec:
   podMonitorNamespaceSelector: {}
   podMonitorSelector:
     matchLabels:
-      postgres-operator.crunchydata.com/crunchy-postgres-exporter: "true"
+      prometheus-monitoring: activated
   probeNamespaceSelector: {}
   probeSelector: {}
   replicas: 2

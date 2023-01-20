@@ -86,10 +86,11 @@ local kp =
         kind: 'PodMonitor',
         metadata: {
           name: 'crunchy-postgres-exporter',
-          namespace: 'postgres-operator',
+          namespace: $.values.common.namespace,
           labels: {
             'app.kubernetes.io/name': 'postgres-operator-monitoring',
             'vendor': 'crunchydata',
+            'prometheus-monitoring': 'activated',
           },
         },
         spec: (import 'pgo-monitoring/exporter/postgres-export-podMonitor.json').spec,
@@ -150,7 +151,7 @@ local kp =
           externalUrl: 'http://www.prometheus.reach.talkylabs.com',
           podMonitorSelector: {
             matchLabels: {
-              'postgres-operator.crunchydata.com/crunchy-postgres-exporter': "true",
+              'prometheus-monitoring': 'activated',
             },
           },
         },

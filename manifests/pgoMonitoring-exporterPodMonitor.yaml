@@ -3,9 +3,10 @@ kind: PodMonitor
 metadata:
   labels:
     app.kubernetes.io/name: postgres-operator-monitoring
+    prometheus-monitoring: activated
     vendor: crunchydata
   name: crunchy-postgres-exporter
-  namespace: postgres-operator
+  namespace: monitoring
 spec:
   namespaceSelector:
     matchNames:
@@ -16,12 +17,6 @@ spec:
     path: /metrics
     port: exporter
     relabelings:
-    - action: keep
-      regex: "true"
-      separator: ""
-      sourceLabels:
-      - __meta_kubernetes_pod_label_postgres_operator_crunchydata_com_crunchy_postgres_exporter
-      - __meta_kubernetes_pod_label_crunchy_postgres_exporter
     - action: drop
       regex: "5432"
       sourceLabels:
@@ -36,10 +31,6 @@ spec:
       - __meta_kubernetes_pod_container_port_number
     - action: drop
       regex: "10000"
-      sourceLabels:
-      - __meta_kubernetes_pod_container_port_number
-    - action: drop
-      regex: ^$
       sourceLabels:
       - __meta_kubernetes_pod_container_port_number
     - action: replace
