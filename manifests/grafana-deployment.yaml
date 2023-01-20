@@ -77,6 +77,9 @@ spec:
         - mountPath: /grafana-dashboard-definitions/0/controller-manager
           name: grafana-dashboard-controller-manager
           readOnly: false
+        - mountPath: /grafana-dashboard-definitions/0/crud-details
+          name: grafana-dashboard-crud-details
+          readOnly: false
         - mountPath: /grafana-dashboard-definitions/0/grafana-overview
           name: grafana-dashboard-grafana-overview
           readOnly: false
@@ -122,8 +125,29 @@ spec:
         - mountPath: /grafana-dashboard-definitions/0/persistentvolumesusage
           name: grafana-dashboard-persistentvolumesusage
           readOnly: false
+        - mountPath: /grafana-dashboard-definitions/0/pgbackrest
+          name: grafana-dashboard-pgbackrest
+          readOnly: false
+        - mountPath: /grafana-dashboard-definitions/0/pod-details
+          name: grafana-dashboard-pod-details
+          readOnly: false
+        - mountPath: /grafana-dashboard-definitions/0/pod-details2
+          name: grafana-dashboard-pod-details2
+          readOnly: false
         - mountPath: /grafana-dashboard-definitions/0/pod-total
           name: grafana-dashboard-pod-total
+          readOnly: false
+        - mountPath: /grafana-dashboard-definitions/0/postgres-overview
+          name: grafana-dashboard-postgres-overview
+          readOnly: false
+        - mountPath: /grafana-dashboard-definitions/0/postgresql-details
+          name: grafana-dashboard-postgresql-details
+          readOnly: false
+        - mountPath: /grafana-dashboard-definitions/0/postgresql-service-health
+          name: grafana-dashboard-postgresql-service-health
+          readOnly: false
+        - mountPath: /grafana-dashboard-definitions/0/prometheus-alerts
+          name: grafana-dashboard-prometheus-alerts
           readOnly: false
         - mountPath: /grafana-dashboard-definitions/0/prometheus-remote-write
           name: grafana-dashboard-prometheus-remote-write
@@ -133,6 +157,9 @@ spec:
           readOnly: false
         - mountPath: /grafana-dashboard-definitions/0/proxy
           name: grafana-dashboard-proxy
+          readOnly: false
+        - mountPath: /grafana-dashboard-definitions/0/query-statistics
+          name: grafana-dashboard-query-statistics
           readOnly: false
         - mountPath: /grafana-dashboard-definitions/0/scheduler
           name: grafana-dashboard-scheduler
@@ -237,6 +264,33 @@ spec:
       - configMap:
           name: grafana-dashboard-workload-total
         name: grafana-dashboard-workload-total
+      - configMap:
+          name: grafana-dashboard-crud-details
+        name: grafana-dashboard-crud-details
+      - configMap:
+          name: grafana-dashboard-pgbackrest
+        name: grafana-dashboard-pgbackrest
+      - configMap:
+          name: grafana-dashboard-pod-details
+        name: grafana-dashboard-pod-details
+      - configMap:
+          name: grafana-dashboard-pod-details2
+        name: grafana-dashboard-pod-details2
+      - configMap:
+          name: grafana-dashboard-postgres-overview
+        name: grafana-dashboard-postgres-overview
+      - configMap:
+          name: grafana-dashboard-postgresql-details
+        name: grafana-dashboard-postgresql-details
+      - configMap:
+          name: grafana-dashboard-postgresql-service-health
+        name: grafana-dashboard-postgresql-service-health
+      - configMap:
+          name: grafana-dashboard-prometheus-alerts
+        name: grafana-dashboard-prometheus-alerts
+      - configMap:
+          name: grafana-dashboard-query-statistics
+        name: grafana-dashboard-query-statistics
       - name: grafana-config
         secret:
           secretName: grafana-config

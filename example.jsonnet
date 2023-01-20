@@ -37,6 +37,62 @@ local kp =
             },
           },
         },
+        rawDashboards+:: {
+          'crud-details.json': (importstr 'pgo-monitoring/dashboards/crud_details.json'),
+          'pgbackrest.json': (importstr 'pgo-monitoring/dashboards/pgbackrest.json'),
+          'pod-details.json': (importstr 'pgo-monitoring/dashboards/pod_details.json'),
+          'pod-details2.json': (importstr 'pgo-monitoring/dashboards/pod_details2.json'),
+          'postgres-overview.json': (importstr 'pgo-monitoring/dashboards/postgres_overview.json'),
+          'postgresql-details.json': (importstr 'pgo-monitoring/dashboards/postgresql_details.json'),
+          'postgresql-service-health.json': (importstr 'pgo-monitoring/dashboards/postgresql_service_health.json'),
+          'prometheus-alerts.json': (importstr 'pgo-monitoring/dashboards/prometheus_alerts.json'),
+          'query-statistics.json': (importstr 'pgo-monitoring/dashboards/query_statistics.json'),
+        },
+      },
+    },
+    // Configure PgoMonitoring
+    pgoMonitoring: {
+      alertingRules: {
+        apiVersion: 'monitoring.coreos.com/v1',
+        kind: 'PrometheusRule',
+        metadata: {
+          name: 'pgo-alertmanager-rules-config',
+          namespace: $.values.common.namespace,
+          labels: {
+            'app.kubernetes.io/name': 'postgres-operator-monitoring',
+            'vendor': 'crunchydata',
+          },
+        },
+        spec: {
+          groups: (import 'pgo-monitoring/alerting-rules/alertmanager-rules-config.json').groups,
+        },
+      },
+      alertingConfig: {
+        apiVersion: 'monitoring.coreos.com/v1alpha1',
+        kind: 'AlertmanagerConfig',
+        metadata: {
+          name: 'pgo-alertmanager-config',
+          namespace: $.values.common.namespace,
+          labels: {
+            'app.kubernetes.io/name': 'postgres-operator-monitoring',
+            'vendor': 'crunchydata',
+            'alertmanagerConfig': 'pgo-monitoring',
+          },
+        },
+        spec: (import 'pgo-monitoring/alerting-rules/alertmanager-config-data.json'),
+      },
+      exporterPodMonitor: {
+        apiVersion: 'monitoring.coreos.com/v1',
+        kind: 'PodMonitor',
+        metadata: {
+          name: 'crunchy-postgres-exporter',
+          namespace: 'postgres-operator',
+          labels: {
+            'app.kubernetes.io/name': 'postgres-operator-monitoring',
+            'vendor': 'crunchydata',
+          },
+        },
+        spec: (import 'pgo-monitoring/exporter/postgres-export-podMonitor.json').spec,
       },
     },
     // Configure External URL's per application and network policy
@@ -63,6 +119,11 @@ local kp =
       alertmanager+: {
         spec+: {
           externalUrl: 'http://www.alertmanager.reach.talkylabs.com',
+          alertmanagerConfigSelector: {
+            matchLabels: {
+              'alertmanagerConfig': 'pgo-monitoring',
+            },
+          },
         },
       },
       networkPolicy+: {
@@ -87,6 +148,11 @@ local kp =
       prometheus+: {
         spec+: {
           externalUrl: 'http://www.prometheus.reach.talkylabs.com',
+          podMonitorSelector: {
+            matchLabels: {
+              'postgres-operator.crunchydata.com/crunchy-postgres-exporter': "true",
+            },
+          },
         },
       },
       networkPolicy+: {
@@ -217,4 +283,5 @@ local kp =
 { ['nodeExporter-' + name]: kp.nodeExporter[name] for name in std.objectFields(kp.nodeExporter) } +
 { ['prometheus-' + name]: kp.prometheus[name] for name in std.objectFields(kp.prometheus) } +
 { ['prometheusAdapter-' + name]: kp.prometheusAdapter[name] for name in std.objectFields(kp.prometheusAdapter) } +
-{ ['ingress-' + name]: kp.ingress[name] for name in std.objectFields(kp.ingress) }
+{ ['ingress-' + name]: kp.ingress[name] for name in std.objectFields(kp.ingress) } +
+{ ['pgoMonitoring-' + name]: kp.pgoMonitoring[name] for name in std.objectFields(kp.pgoMonitoring) }
