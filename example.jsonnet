@@ -47,6 +47,7 @@ local kp =
           'postgresql-service-health.json': (importstr 'pgo-monitoring/dashboards/postgresql_service_health.json'),
           'prometheus-alerts.json': (importstr 'pgo-monitoring/dashboards/prometheus_alerts.json'),
           'query-statistics.json': (importstr 'pgo-monitoring/dashboards/query_statistics.json'),
+          'activemq-artemis-sample-dashboard.json': (importstr 'artemis-monitoring/dashboards/ActiveMQArtemisSampleDashboard.json'),
         },
       },
     },
@@ -94,6 +95,21 @@ local kp =
           },
         },
         spec: (import 'pgo-monitoring/exporter/postgres-export-podMonitor.json').spec,
+      },
+    },
+    // Configure ArtemisMonitoring
+    artemisMonitoring: {
+      exporterServiceMonitor: {
+        apiVersion: 'monitoring.coreos.com/v1',
+        kind: 'ServiceMonitor',
+        metadata: {
+          name: 'artemis-broker-exporter',
+          namespace: $.values.common.namespace,
+          labels: {
+            'prometheus-monitoring': 'activated',
+          },
+        },
+        spec: (import 'artemis-monitoring/exporter/artemis-cluster-service-monitor.json').spec, 
       },
     },
     // Configure External URL's per application and network policy
@@ -149,11 +165,6 @@ local kp =
       prometheus+: {
         spec+: {
           externalUrl: 'http://www.prometheus.reach.talkylabs.com',
-          podMonitorSelector: {
-            matchLabels: {
-              'prometheus-monitoring': 'activated',
-            },
-          },
         },
       },
       networkPolicy+: {
@@ -285,4 +296,5 @@ local kp =
 { ['prometheus-' + name]: kp.prometheus[name] for name in std.objectFields(kp.prometheus) } +
 { ['prometheusAdapter-' + name]: kp.prometheusAdapter[name] for name in std.objectFields(kp.prometheusAdapter) } +
 { ['ingress-' + name]: kp.ingress[name] for name in std.objectFields(kp.ingress) } +
-{ ['pgoMonitoring-' + name]: kp.pgoMonitoring[name] for name in std.objectFields(kp.pgoMonitoring) }
+{ ['pgoMonitoring-' + name]: kp.pgoMonitoring[name] for name in std.objectFields(kp.pgoMonitoring) } +
+{ ['artemisMonitoring-' + name]: kp.artemisMonitoring[name] for name in std.objectFields(kp.artemisMonitoring) }

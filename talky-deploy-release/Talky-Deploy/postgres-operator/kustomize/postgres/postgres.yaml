@@ -1,0 +1,120 @@
+apiVersion: postgres-operator.crunchydata.com/v1beta1
+kind: PostgresCluster
+metadata:
+  name: talky
+spec:
+  metadata:
+    annotations:
+      myPosgresCluster: talky
+    labels:
+      myPosgresCluster: talky
+  image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres:ubi8-14.6-2
+  postgresVersion: 14
+  # set openshift to true if on openshift framework
+  openshift: false
+  patroni:
+    dynamicConfiguration:
+      ## Synchronous replication waits for a transaction to be written
+      ## to at least one additional server before it considers the transaction
+      ## to be committed
+      synchronous_mode: true
+      ## asynchronous replication is allowed if for some reasons, synchronous replication
+      ## is down. To force synchronous replication, set 'synchronous_mode_strict' to true.
+      synchronous_mode_strict: false
+      postgresql:
+        parameters:
+          synchronous_commit: "on"
+  monitoring:
+    pgmonitor:
+      exporter:
+        image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres-exporter:ubi8-5.3.0-0
+  instances:
+    - name: talkyha1
+      replicas: 2
+      #resources:
+      #  limits:
+      #    cpu: 2.0
+      #    memory: 4Gi
+      dataVolumeClaimSpec:
+        ## if storageClassName is not specified, the default storage class of the
+        ## cluster is used. Spefied it if the cluster does not have a default storage
+        ## class, or you wish to use a different storage class
+        #storageClassName: "<a_class>"
+        accessModes:
+        - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: 2Gi
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  postgres-operator.crunchydata.com/cluster: talky
+                  postgres-operator.crunchydata.com/instance-set: talkyha1
+  backups:
+    pgbackrest:
+      image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbackrest:ubi8-2.41-2
+      configuration:
+      - secret:
+          name: talky-pgbackrest-secrets
+      global:
+        repo1-path: /pgbackrest/postgres-operator/talky/repo1
+        repo1-retention-full: "14"
+        repo1-retention-full-type: time
+        #repo2-path: /pgbackrest/postgres-operator/talky/repo2
+        #repo2-retention-full: "14"
+        #repo2-retention-full-type: time
+      manual:
+        repoName: repo1
+        options:
+         - --type=full
+      repos:
+      - name: repo1
+        schedules:
+          ## 1 full every Sunday at at 1am and take differential
+          ## backups daily at 1am on every day except Sunday.
+          full: "0 1 * * 0"
+          differential: "0 1 * * 1-6"
+        volume:
+          volumeClaimSpec:
+            ## if storageClassName is not specified, the default storage class of the
+            ## cluster is used. Spefied it if the cluster does not have a default storage
+            ## class, or you wish to use a different storage class
+            #storageClassName: "<a_class>"
+            accessModes:
+            - "ReadWriteOnce"
+            resources:
+              requests:
+                storage: 4Gi
+      #- name: repo2
+      #  schedules:
+      #    ## 1 full every Sunday at at 1am and take differential
+      #    ## backups daily at 1am on every day except Sunday.
+      #    full: "0 1 * * 0"
+      #    differential: "0 1 * * 1-6"
+      #  s3:
+      #    bucket: "<YOUR_AWS_S3_BUCKET_NAME>"
+      #    endpoint: "<YOUR_AWS_S3_ENDPOINT>"
+      #    region: "<YOUR_AWS_S3_REGION>"
+  proxy:
+    pgBouncer:
+      image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbouncer:ubi8-1.17-5
+      replicas: 2
+      #resources:
+      #  limits:
+      #    cpu: 200m
+      #    memory: 128Mi
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  postgres-operator.crunchydata.com/cluster: talky
+                  postgres-operator.crunchydata.com/role: pgbouncer

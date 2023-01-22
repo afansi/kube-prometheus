@@ -1,0 +1,1 @@
+{"apiVersion":"monitoring.coreos.com/v1","kind":"ServiceMonitor","metadata":{"labels":{"prometheus-monitoring":"activated"},"name":"ex-aao-app"},"spec":{"endpoints":[{"port":"wconsj-(.*)"}],"namespaceSelector":{"matchNames":["activemq-artemis"]},"selector":{"matchLabels":{"application":"ex-aao-app"}}}}

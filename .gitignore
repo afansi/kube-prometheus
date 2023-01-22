@@ -10,3 +10,5 @@ developer-workspace/gitpod/_output
 developer-workspace/codespaces/kind 
 
 ingress-talky-kube-prometheus-auth
+s3.conf
+*/**/s3.conf

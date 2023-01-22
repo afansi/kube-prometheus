@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: ex-aao-app
+  labels:
+    prometheus-monitoring: activated
+spec:
+  namespaceSelector:
+    matchNames:
+    - activemq-artemis
+  selector:
+    matchLabels:
+      application: ex-aao-app
+  endpoints:
+  - port: wconsj-(.*)

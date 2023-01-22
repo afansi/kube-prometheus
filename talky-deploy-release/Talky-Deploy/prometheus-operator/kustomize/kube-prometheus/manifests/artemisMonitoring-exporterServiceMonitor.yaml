@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    prometheus-monitoring: activated
+  name: artemis-broker-exporter
+  namespace: monitoring
+spec:
+  endpoints:
+  - port: wconsj-(.*)
+  namespaceSelector:
+    matchNames:
+    - activemq-artemis
+  selector:
+    matchLabels:
+      application: ex-aao-app

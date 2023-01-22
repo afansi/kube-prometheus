@@ -1,0 +1,30 @@
+apiVersion: broker.amq.io/v1beta1
+kind: ActiveMQArtemis
+metadata:
+  name: ex-aao
+spec:
+  deploymentPlan:
+    size: 2
+    image: placeholder
+    persistenceEnabled: true
+    messageMigration: true
+    enableMetricsPlugin: true
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            topologyKey: kubernetes.io/hostname
+            labelSelector:
+              matchLabels:
+                ActiveMQArtemis: ex-aao
+                application: ex-aao-app
+    #resources:
+    #  limits:
+    #    cpu: "500m"
+    #    memory: "1024Mi"
+    #  requests:
+    #    cpu: "250m"
+    #    memory: "512Mi"
+  console:
+    expose: true

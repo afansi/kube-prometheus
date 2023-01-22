@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: ex-aao-allproto-lb
+  labels:
+    application: ex-aao-app
+    ActiveMQArtemis: ex-aao
+spec:
+  ports:
+    - name: allproto
+      protocol: TCP
+      port: 61616
+  type: ClusterIP
+  selector:
+    application: ex-aao-app

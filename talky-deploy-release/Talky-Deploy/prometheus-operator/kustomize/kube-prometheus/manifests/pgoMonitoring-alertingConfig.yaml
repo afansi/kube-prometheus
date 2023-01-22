@@ -1,0 +1,39 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  labels:
+    alertmanagerConfig: pgo-monitoring
+    app.kubernetes.io/name: postgres-operator-monitoring
+    vendor: crunchydata
+  name: pgo-alertmanager-config
+  namespace: monitoring
+spec:
+  inhibitRules:
+  - equal:
+    - alertname
+    - job
+    - service
+    sourceMatch:
+    - name: severity
+      value: critical
+    targetMatch:
+    - name: severity
+      value: warning
+  receivers:
+  - emailConfigs:
+    - from: Alertmanager <abc@yahoo.com>
+      requireTLS: false
+      sendResolved: true
+      smarthost: 'localhost: 25'
+      to: example@crunchydata.com
+    name: default-receiver
+  route:
+    groupBy:
+    - severity
+    - service
+    - job
+    - alertname
+    groupInterval: 5m
+    groupWait: 30s
+    receiver: default-receiver
+    repeatInterval: 24h
